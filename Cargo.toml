@@ -7,6 +7,7 @@ default-members = [
     "sys_time",
     "test/spdm-requester-emu",
     "test/spdm-responder-emu",
+    "spdm-x509-rs",
 ]
 
 members = [
@@ -14,6 +15,7 @@ members = [
     "codec",
     "executor",
     "sys_time",
+    "spdm-x509-rs",
     "idekm",
     "tdisp",
     "test/cavp_acvts_test",

@@ -1,0 +1,48 @@
+═══════════════════════════════════════════════════════════════════
+              X.509 CERTIFICATE VALIDATION REPORT
+═══════════════════════════════════════════════════════════════════
+
+📋 CERTIFICATE INFORMATION
+   Version:             v3
+   Serial Number:       [10, 03]
+   Subject:             emailAddress=edkii@tianocore.org, CN=TestCert, OU=EDKII, O=TianoCore, ST=SH, C=CN
+   Issuer:              emailAddress=edkii@tianocore.org, CN=TestSub, OU=EDKII, O=TianoCore, ST=SH, C=CN
+   Not Before:          UtcTime(UtcTime(DateTime { year: 2017, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1491813484s }))
+   Not After:           UtcTime(UtcTime(DateTime { year: 2018, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1523349484s }))
+   Signature Algorithm: 1.2.840.113549.1.1.11
+   Public Key Algorithm:1.2.840.113549.1.1.1
+   Public Key Size:     2048-bit
+   Extensions:          7 extensions found
+     - 2.5.29.19
+     - 2.16.840.1.113730.1.1
+     - 2.16.840.1.113730.1.13
+     - 2.5.29.14
+     - 2.5.29.35
+     - 2.5.29.15 (critical)
+     - 2.5.29.37
+
+🔐 VALIDATION CHECKS
+   Total checks: 3
+
+   ✓ [PASS] Certificate Structure
+      Verify certificate has valid structure
+      Details: Certificate successfully validated
+
+   ✓ [PASS] Version Check
+      Verify certificate version is appropriate
+      Details: Certificate uses X.509 v3 (modern standard)
+
+   ✓ [PASS] Serial Number Validity
+      Verify serial number is present and within recommended size
+      Details: Serial number length: 2 bytes
+
+═══════════════════════════════════════════════════════════════════
+📊 SUMMARY
+   Passed:   3 ✓
+   Failed:   0 ✗
+   Warnings: 0 ⚠
+   Skipped:  0 ○
+
+🏁 OVERALL RESULT
+   ✓✓✓ CERTIFICATE IS VALID ✓✓✓
+═══════════════════════════════════════════════════════════════════

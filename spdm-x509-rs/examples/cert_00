@@ -1,0 +1,4 @@
+Bag Attributes
+    localKeyID: 32 25 22 FA 81 B3 BF 25 E2 F7 8F 0B 1B C4 50 70 BB B7 85 96 
+subject=/C=CN/ST=SH/O=TianoCore/OU=EDKII/CN=TestCert/emailAddress=edkii@tianocore.org
+issuer=/C=CN/ST=SH/O=TianoCore/OU=EDKII/CN=TestSub/emailAddress=edkii@tianocore.org

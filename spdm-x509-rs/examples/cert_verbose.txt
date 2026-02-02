@@ -1,0 +1,101 @@
+═══════════════════════════════════════════════════════════════════
+              X.509 CERTIFICATE VALIDATION REPORT
+═══════════════════════════════════════════════════════════════════
+
+📄 FILE INFORMATION
+   Path: examples/lcd_certchain.der.bin
+   Size: 3659 bytes
+
+🔍 PARSING
+   ✓ Certificate parsed successfully
+
+📋 CERTIFICATE INFORMATION
+   Version:             v3
+   Serial Number:       1003
+   Subject:             emailAddress=edkii@tianocore.org, CN=TestCert, OU=EDKII, O=TianoCore, ST=SH, C=CN
+   Issuer:              emailAddress=edkii@tianocore.org, CN=TestSub, OU=EDKII, O=TianoCore, ST=SH, C=CN
+   Not Before:          UtcTime(UtcTime(DateTime { year: 2017, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1491813484s }))
+   Not After:           UtcTime(UtcTime(DateTime { year: 2018, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1523349484s }))
+   Signature Algorithm: 1.2.840.113549.1.1.11
+   Public Key Algorithm:1.2.840.113549.1.1.1
+   Extensions:          7 extensions found
+     - 2.5.29.19
+     - 2.16.840.1.113730.1.1
+     - 2.16.840.1.113730.1.13
+     - 2.5.29.14
+     - 2.5.29.35
+     - 2.5.29.15 (critical)
+     - 2.5.29.37
+
+🔐 VALIDATION CHECKS
+   Total checks: 14
+
+   ✓ [PASS] DER Structure Validation
+      Verify certificate has valid DER/ASN.1 encoding
+      Details: Certificate successfully decoded from DER format
+
+   ✓ [PASS] Version Check
+      Verify certificate version is appropriate
+      Details: Certificate uses X.509 v3 (modern standard)
+
+   ✓ [PASS] Serial Number Validity
+      Verify serial number is present and within recommended size
+      Details: Serial number length: 2 bytes
+
+   ✓ [PASS] Signature Algorithm Security
+      Verify signature algorithm is cryptographically strong
+      Details: Algorithm: 1.2.840.113549.1.1.11
+
+   ✓ [PASS] Subject Distinguished Name
+      Verify subject DN is present and valid
+      Details: emailAddress=edkii@tianocore.org, CN=TestCert, OU=EDKII, O=TianoCore, ST=SH, C=CN
+
+   ✓ [PASS] Issuer Distinguished Name
+      Verify issuer DN is present and valid
+      Details: emailAddress=edkii@tianocore.org, CN=TestSub, OU=EDKII, O=TianoCore, ST=SH, C=CN
+
+   ✓ [PASS] Self-Signed Certificate Detection
+      Check if certificate is self-signed (subject == issuer)
+      Details: Certificate is not self-signed
+
+   ✓ [PASS] Validity Period Structure
+      Verify notBefore and notAfter dates are present
+      Details: Valid from UtcTime(UtcTime(DateTime { year: 2017, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1491813484s })) to UtcTime(UtcTime(DateTime { year: 2018, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1523349484s }))
+
+   ✗ [FAIL] Time-based Validity Check
+      Verify certificate is currently valid (not expired, not future-dated)
+      Details: Certificate has expired
+      ℹ️  Verbose: The certificate's notAfter time (UtcTime(UtcTime(DateTime { year: 2018, month: 4, day: 10, hour: 8, minutes: 38, seconds: 4, unix_duration: 1523349484s }))) has passed. Expired certificates should not be trusted as they may have been compromised or revoked. This is a critical security issue. The certificate owner must renew the certificate. Do NOT bypass this check in production environments.
+
+   ✓ [PASS] Extensions Presence
+      Check for X.509 v3 extensions
+      Details: 7 extension(s) found
+
+   ✓ [PASS] Critical Extensions
+      Verify all critical extensions are recognized
+      Details: Critical extensions: 2.5.29.15
+
+   ✓ [PASS] Public Key Presence
+      Verify subject public key is present
+      Details: Public key size: 2160 bits
+
+   ○ [SKIP] Signature Verification
+      Verify certificate signature (requires issuer certificate)
+      Details: Issuer certificate not provided - cannot verify signature
+
+   ✓ [PASS] Overall Structure Validation
+      Comprehensive validation of certificate structure and constraints
+      Details: All structural validations passed
+
+═══════════════════════════════════════════════════════════════════
+📊 SUMMARY
+   Passed:   12 ✓
+   Failed:   1 ✗
+   Warnings: 0 ⚠
+   Skipped:  1 ○
+
+🏁 OVERALL RESULT
+   ✗✗✗ CERTIFICATE IS INVALID ✗✗✗
+   Reason: 1 check(s) failed
+═══════════════════════════════════════════════════════════════════
+

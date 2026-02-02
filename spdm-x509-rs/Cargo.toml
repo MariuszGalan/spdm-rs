@@ -1,0 +1,50 @@
+[package]
+name = "spdm-x509-rs"
+version = "0.1.0"
+edition = "2021"
+authors = ["Intel Corporation"]
+license = "MIT OR Apache-2.0"
+description = "X.509 certificate validator with SPDM support"
+repository = "https://github.com/intel/spdm-x509-rs"
+readme = "README.md"
+
+[dependencies]
+# ASN.1/DER encoding and decoding
+der = { version = "0.7", features = ["alloc", "derive", "oid"] }
+spki = "0.7"  # Subject Public Key Info structures
+const-oid = "0.9"
+
+# Cryptographic operations
+ring = { version = "0.17", default-features = false, features = ["alloc"] }
+
+# PEM encoding support
+pem-rfc7468 = { version = "0.7", features = ["alloc"] }
+
+# Lock base64ct to version compatible with stable Rust (< 1.8.3 requires edition2024)
+base64ct = "=1.6.0"
+
+# Logging
+log = "0.4"
+
+# Optional: for error handling
+thiserror = { version = "1.0", optional = true }
+
+[dev-dependencies]
+# For testing
+hex = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+default = ["std", "spdm"]
+std = ["der/std", "thiserror"]
+alloc = ["der/alloc"]
+spdm = []  # Enable SPDM-specific validation (DSP0274)
+
+[lib]
+name = "spdm_x509"
+path = "src/lib.rs"
+
+[[example]]
+name = "validate_cert"
+path = "examples/validate_cert.rs"
