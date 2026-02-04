@@ -161,17 +161,38 @@ impl SpdmValidator {
     /// # Returns
     /// - `Ok(())` if validation succeeds
     /// - `Err(Error)` if validation fails
-    pub fn validate_spdm_certificate(
+    /// Validate an SPDM certificate with custom validation options
+    ///
+    /// Performs complete SPDM validation including:
+    /// - Standard X.509 validation (with custom options)
+    /// - SPDM EKU validation
+    /// - SPDM extension validation
+    /// - Hardware Identity validation
+    /// - Basic Constraints validation per model
+    /// - Algorithm verification
+    ///
+    /// # Arguments
+    /// - `cert`: The certificate to validate
+    /// - `model`: The expected certificate model
+    /// - `role`: The certificate role (Requester or Responder)
+    /// - `base_asym_algo`: Negotiated SPDM base asymmetric algorithm (bitfield)
+    /// - `base_hash_algo`: Negotiated SPDM base hash algorithm (bitfield)
+    /// - `options`: Validation options (e.g., skip time validation)
+    ///
+    /// # Returns
+    /// - `Ok(())` if validation succeeds
+    /// - `Err(Error)` if validation fails
+    pub fn validate_spdm_certificate_with_options(
         &self,
         cert: &Certificate,
         model: SpdmCertificateModel,
         role: SpdmCertificateRole,
         base_asym_algo: u32,
         base_hash_algo: u32,
+        options: &ValidationOptions,
     ) -> Result<()> {
-        // Perform standard X.509 validation first
-        let options = ValidationOptions::default();
-        self.validator.validate(cert, &options)?;
+        // Perform standard X.509 validation first with custom options
+        self.validator.validate(cert, options)?;
 
         // Validate SPDM-specific requirements
         self.validate_spdm_eku(cert, role)?;
@@ -184,6 +205,47 @@ impl SpdmValidator {
 
         Ok(())
     }
+
+    /// Validate an SPDM certificate
+    ///
+    /// Performs complete SPDM validation including:
+    /// - Standard X.509 validation
+    /// - SPDM EKU validation
+    /// - SPDM extension validation
+    /// - Hardware Identity validation
+    /// - Basic Constraints validation per model
+    /// - Algorithm verification
+    ///
+    /// # Arguments
+    /// - `cert`: The certificate to validate
+    /// - `model`: The expected certificate model
+    /// - `role`: The certificate role (Requester or Responder)
+    /// - `base_asym_algo`: Negotiated SPDM base asymmetric algorithm (bitfield)
+    /// - `base_hash_algo`: Negotiated SPDM base hash algorithm (bitfield)
+    ///
+    /// # Returns
+    /// - `Ok(())` if validation succeeds
+    /// - `Err(Error)` if validation fails
+    pub fn validate_spdm_certificate(
+        &self,
+        cert: &Certificate,
+        model: SpdmCertificateModel,
+        role: SpdmCertificateRole,
+        base_asym_algo: u32,
+        base_hash_algo: u32,
+    ) -> Result<()> {
+        // Use default validation options
+        let options = ValidationOptions::default();
+        self.validate_spdm_certificate_with_options(
+            cert,
+            model,
+            role,
+            base_asym_algo,
+            base_hash_algo,
+            &options,
+        )
+    }
+
 
     /// Validate SPDM Extended Key Usage (EKU)
     ///

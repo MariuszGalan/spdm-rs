@@ -26,6 +26,7 @@ use std::process;
 use spdm_x509::spdm::{
     SpdmBaseAsymAlgo, SpdmBaseHashAlgo, SpdmCertificateModel, SpdmCertificateRole, SpdmValidator,
 };
+use spdm_x509::validator::ValidationOptions;
 use spdm_x509::Certificate;
 
 #[cfg(feature = "spdm")]
@@ -492,12 +493,19 @@ fn main() {
     println!("Performing SPDM validation...");
     let validator = SpdmValidator::new();
 
-    match validator.validate_spdm_certificate(
+    // Create validation options based on config
+    let mut options = ValidationOptions::default();
+    if config.skip_time {
+        options.check_time = false;
+    }
+
+    match validator.validate_spdm_certificate_with_options(
         &cert,
         config.model,
         config.role,
         config.base_asym_algo,
         config.base_hash_algo,
+        &options,
     ) {
         Ok(_) => {
             println!("✓ SPDM validation PASSED");

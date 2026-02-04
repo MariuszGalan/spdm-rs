@@ -11,15 +11,51 @@ use core::convert::TryFrom;
 
 use crate::crypto::SpdmCertOperation;
 use crate::error::{SpdmResult, SPDM_STATUS_INVALID_CERT, SPDM_STATUS_INVALID_STATE_LOCAL};
+
+// =============================================================================
+// Conditional compilation: spdm-x509-validator vs webpki
+// =============================================================================
+
+#[cfg(feature = "spdm-x509-validator")]
+pub static DEFAULT: SpdmCertOperation = SpdmCertOperation {
+    get_cert_from_cert_chain_cb: get_cert_from_cert_chain_x509,
+    verify_cert_chain_cb: verify_cert_chain_x509,
+};
+
+#[cfg(not(feature = "spdm-x509-validator"))]
 use ring::io::der;
+#[cfg(not(feature = "spdm-x509-validator"))]
 use rustls_pki_types::{CertificateDer, SignatureVerificationAlgorithm, UnixTime};
+#[cfg(not(feature = "spdm-x509-validator"))]
 use webpki::{ExtendedKeyUsageValidator, KeyPurposeId, KeyPurposeIdIter};
 
+#[cfg(not(feature = "spdm-x509-validator"))]
 pub static DEFAULT: SpdmCertOperation = SpdmCertOperation {
     get_cert_from_cert_chain_cb: get_cert_from_cert_chain,
     verify_cert_chain_cb: verify_cert_chain,
 };
 
+// =============================================================================
+// spdm-x509-rs implementation
+// =============================================================================
+
+#[cfg(feature = "spdm-x509-validator")]
+fn get_cert_from_cert_chain_x509(cert_chain: &[u8], index: isize) -> SpdmResult<(usize, usize)> {
+    spdm_x509::spdmlib::get_cert_from_cert_chain(cert_chain, index)
+        .map_err(|_| SPDM_STATUS_INVALID_CERT)
+}
+
+#[cfg(feature = "spdm-x509-validator")]
+fn verify_cert_chain_x509(cert_chain: &[u8]) -> SpdmResult {
+    spdm_x509::spdmlib::verify_cert_chain(cert_chain)
+        .map_err(|_| SPDM_STATUS_INVALID_CERT)
+}
+
+// =============================================================================
+// webpki implementation (original)
+// =============================================================================
+
+#[cfg(not(feature = "spdm-x509-validator"))]
 fn get_cert_from_cert_chain(cert_chain: &[u8], index: isize) -> SpdmResult<(usize, usize)> {
     let mut offset = 0usize;
     let mut this_index = 0isize;
@@ -50,9 +86,11 @@ fn get_cert_from_cert_chain(cert_chain: &[u8], index: isize) -> SpdmResult<(usiz
 }
 
 // 1.3.6.1.4.1.412.274.3 { id-DMTF-spdm 3 }
+#[cfg(not(feature = "spdm-x509-validator"))]
 static EKU_SPDM_RESPONDER_AUTH: &[u8] =
     &[0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0x1C, 0x82, 0x12, 0x03];
 // 1.3.6.1.4.1.412.274.4 { id-DMTF-spdm 4 }
+#[cfg(not(feature = "spdm-x509-validator"))]
 static EKU_SPDM_REQUESTER_AUTH: &[u8] =
     &[0x2B, 0x06, 0x01, 0x04, 0x01, 0x83, 0x1C, 0x82, 0x12, 0x04];
 
@@ -64,10 +102,13 @@ static EKU_SPDM_REQUESTER_AUTH: &[u8] =
 /// - If EKU contains only non-SPDM OIDs, validation passes
 /// - Otherwise, validation fails
 #[allow(dead_code)]
+#[cfg(not(feature = "spdm-x509-validator"))]
 struct SpdmRequesterEkuValidator;
 
 #[allow(dead_code)]
+#[cfg(not(feature = "spdm-x509-validator"))]
 impl ExtendedKeyUsageValidator for SpdmRequesterEkuValidator {
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn validate(&self, iter: KeyPurposeIdIter<'_, '_>) -> Result<(), webpki::Error> {
         let mut has_spdm_requester = false;
         let mut has_spdm_responder = false;
@@ -114,6 +155,7 @@ impl ExtendedKeyUsageValidator for SpdmRequesterEkuValidator {
 
 /// Create an EKU validator for SPDM Requester certificates
 #[allow(dead_code)]
+#[cfg(not(feature = "spdm-x509-validator"))]
 pub fn spdm_requester_eku_validator() -> impl ExtendedKeyUsageValidator {
     SpdmRequesterEkuValidator
 }
@@ -125,9 +167,12 @@ pub fn spdm_requester_eku_validator() -> impl ExtendedKeyUsageValidator {
 /// - If EKU contains SPDM requester auth OID, it must also contain SPDM responder auth OID
 /// - If EKU contains only non-SPDM OIDs, validation passes
 /// - Otherwise, validation fails
+#[cfg(not(feature = "spdm-x509-validator"))]
 struct SpdmResponderEkuValidator;
 
+#[cfg(not(feature = "spdm-x509-validator"))]
 impl ExtendedKeyUsageValidator for SpdmResponderEkuValidator {
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn validate(&self, iter: KeyPurposeIdIter<'_, '_>) -> Result<(), webpki::Error> {
         let mut has_spdm_requester = false;
         let mut has_spdm_responder = false;
@@ -173,11 +218,14 @@ impl ExtendedKeyUsageValidator for SpdmResponderEkuValidator {
 }
 
 /// Create an EKU validator for SPDM Responder certificates
+#[cfg(not(feature = "spdm-x509-validator"))]
 pub fn spdm_responder_eku_validator() -> impl ExtendedKeyUsageValidator {
     SpdmResponderEkuValidator
 }
 
+#[cfg(not(feature = "spdm-x509-validator"))]
 fn verify_cert_chain(cert_chain: &[u8]) -> SpdmResult {
+#[cfg(not(feature = "spdm-x509-validator"))]
     static ALL_SIGALGS: &[&dyn SignatureVerificationAlgorithm] = &[
         webpki::ring::RSA_PKCS1_2048_8192_SHA256,
         webpki::ring::RSA_PKCS1_2048_8192_SHA384,
@@ -413,6 +461,7 @@ mod tests {
     use super::*;
 
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case0_cert_from_cert_chain() {
         let cert_chain = &include_bytes!("public_cert.der")[..];
         let status = get_cert_from_cert_chain(cert_chain, -1).is_ok();
@@ -420,18 +469,21 @@ mod tests {
     }
 
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case1_cert_from_cert_chain() {
         let cert_chain = &include_bytes!("public_cert.der")[..];
         let status = get_cert_from_cert_chain(cert_chain, 0).is_ok();
         assert!(status);
     }
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case2_cert_from_cert_chain() {
         let cert_chain = &include_bytes!("public_cert.der")[..];
         let status = get_cert_from_cert_chain(cert_chain, 1).is_ok();
         assert!(status);
     }
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case3_cert_from_cert_chain() {
         let cert_chain = &mut [0x1u8; 4096];
         cert_chain[0] = 0x00;
@@ -440,12 +492,14 @@ mod tests {
         assert!(status);
     }
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case4_cert_from_cert_chain() {
         let cert_chain = &mut [0x11u8; 3];
         let status = get_cert_from_cert_chain(cert_chain, 0).is_err();
         assert!(status);
     }
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_case5_cert_from_cert_chain() {
         let cert_chain = &include_bytes!("public_cert.der")[..];
         let status = get_cert_from_cert_chain(cert_chain, -1).is_ok();
@@ -457,6 +511,7 @@ mod tests {
 
     /// verfiy cert chain
     #[test]
+#[cfg(not(feature = "spdm-x509-validator"))]
     fn test_verify_cert_chain_case1() {
         let bundle_certs_der =
             &include_bytes!("../../../../test_key/crypto_chains/ca_selfsigned.crt.der")[..];
