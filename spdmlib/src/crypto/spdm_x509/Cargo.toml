@@ -1,0 +1,50 @@
+[package]
+name = "spdm_x509"
+version = "0.1.0"
+edition = "2021"
+authors = [
+    "Mariusz Galan <stanislaw.grams@intel.com>",
+    "Stanislaw Grams <stanislaw.grams@intel.com>"
+    ]
+license = "Apache-2.0 or MIT"
+description = "X.509 certificate parsing and validation with SPDM extensions and multi-backend support"
+
+[dependencies]
+# ASN.1/DER encoding and decoding
+der = { version = "0.7", default-features = false, features = ["alloc", "derive", "oid"] }
+spki = { version = "0.7", default-features = false, features = ["alloc"] }
+const-oid = { version = "0.9", default-features = false }
+
+# Cryptographic backends (optional)
+ring = { version = "0.17", optional = true, default-features = false, features = ["alloc"] }
+untrusted = { version = "0.9", optional = true }
+
+# PEM encoding support
+pem-rfc7468 = { version = "0.7", default-features = false, features = ["alloc"] }
+
+# Lock base64ct to version compatible with stable Rust (< 1.8.3 requires edition2024)
+base64ct = "=1.6.0"
+
+# Logging
+log = { version = "0.4", default-features = false }
+
+# Optional: for error handling
+thiserror = { version = "1.0", optional = true }
+
+[dev-dependencies]
+# For testing
+hex = "0.4"
+serde = { version = "1.0", features = ["derive"] }
+serde_json = "1.0"
+
+[features]
+default = ["ring-backend", "spdm"]
+ring-backend = ["ring", "untrusted"]
+mbedtls-backend = []
+spdm = []  # Enable SPDM-specific validation (DSP0274)
+alloc = ["der/alloc"]
+std = ["der/std", "thiserror", "ring?/std", "log/std"]
+
+[lib]
+name = "spdm_x509"
+path = "src/lib.rs"
