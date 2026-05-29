@@ -38,6 +38,8 @@ serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
 # x509-limbo harness support (typified models from limbo-schema.json)
 limbo-harness-support = { path = "../../../../external/x509-limbo/harness-support/rust" }
+# ring for hash computation in integration test helpers
+ring = { version = "0.17", default-features = false, features = ["alloc"] }
 
 [features]
 default = ["ring-backend", "no-time-check"]
