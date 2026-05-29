@@ -47,7 +47,7 @@ pub use x509::{
     parse_spdm_cert_chain, validate_spdm_cert_chain, validate_spdm_cert_chain_with_backend,
     verify_cert_chain, verify_cert_chain_with_backend, verify_cert_chain_with_options,
     verify_signature, verify_signature_with_backend, SpdmBaseAsymAlgo, SpdmBaseHashAlgo,
-    SpdmCertificateModel, SpdmCertificateRole, SpdmValidator,
+    SpdmCertificateModel, SpdmCertificateRole, SpdmValidator, ValidationOptions,
 };
 
 /// Re-export commonly used types

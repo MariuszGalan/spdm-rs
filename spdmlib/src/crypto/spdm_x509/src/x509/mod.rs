@@ -13,7 +13,7 @@ pub mod extensions;
 pub mod oids;
 pub mod signature;
 pub mod spdm_validator;
-pub(crate) mod validator;
+pub mod validator;
 
 pub use chain::{
     get_cert_from_cert_chain, parse_spdm_cert_chain, validate_spdm_cert_chain,
@@ -26,3 +26,4 @@ pub use signature::{
     verify_signature_algorithm, verify_signature_with_backend, SpdmBaseAsymAlgo, SpdmBaseHashAlgo,
 };
 pub use spdm_validator::{SpdmCertificateModel, SpdmCertificateRole, SpdmValidator};
+pub use validator::ValidationOptions;
